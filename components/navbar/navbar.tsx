@@ -7,23 +7,23 @@ import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import { fetchCourses } from "@/lib/api";
 
-export async function Navbar() {
-    const [searchVisible, setSearchVisible] = useState(false)
 
-    const courses = await fetchCourses()
+export function Navbar() {
+    const [searchVisible, setSearchVisible] = useState(false)
 
     return (
         <header className="bg-blue-600 text-white p-4">
             <nav className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                     <Link href="/" className="text-2xl font-bold">
-                        {/* {process.env.INSTANCE_NAME} TODO: this generates an SSR error because the client doesn't have that environment variable */}
-                        <span className="sr-only">SchoolHub</span>
+                        <span>{process.env.INSTANCE_NAME}</span>
                     </Link>
-                    <Button variant="ghost" className="text-white">
-                        <Home className="mr-2 h-4 w-4" />
-                        Home
-                    </Button>
+                    <Link href="/">
+                        <Button variant="ghost" className="text-white">
+                            <Home className="mr-2 h-4 w-4" />
+                            Home
+                        </Button>
+                    </Link>
                     <Button variant="ghost" className="text-white">
                         <Calendar className="mr-2 h-4 w-4" />
                         Schedule
@@ -35,16 +35,16 @@ export async function Navbar() {
                                 Courses
                             </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="min-w-[200px]">
+                        <PopoverContent className="min-w-[200px] bg-black text-white">
                             <ul className="space-y-1 p-2">
-                                {courses?.map(course => (
+                                {fetchCourses().then(courses => courses?.map(course => (
                                     <li key={course.id}>
                                         <Link href={`/courses/${course.id}`} className="flex items-center space-x-2">
                                             <FileText className="h-4 w-4" />
                                             <span>{course.name}</span>
                                         </Link>
                                     </li>
-                                ))}
+                                )))}
                             </ul>
                         </PopoverContent>
                     </Popover>
@@ -57,17 +57,19 @@ export async function Navbar() {
                     <Button
                         variant="ghost"
                         className="text-white"
-                        onClick={() => setSearchVisible(!searchVisible)}
+                        onClick={() => setSearchVisible(true)}
                     >
                         <Search className="h-4 w-4" />
                     </Button>
-                    <form className={searchVisible ? "animate-slide-in" : "animate-slide-out"}>
-                        <input
-                            type="text"
-                            placeholder="Search..."
-                            className="bg-transparent border-none outline-none px-2 py-1"
-                        />
-                    </form>
+                    {searchVisible && (
+                        <form className="animate-in slide-in-from-right duration-200">
+                            <input
+                                type="text"
+                                placeholder="Search..."
+                                className="bg-transparent border-none outline-none px-2 py-1"
+                            />
+                        </form>
+                    )}
                     <Button variant="ghost" className="text-white">
                         <Mail className="h-4 w-4" />
                     </Button>
@@ -82,4 +84,3 @@ export async function Navbar() {
         </header>
     )
 }
-

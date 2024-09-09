@@ -35,12 +35,12 @@ export interface Course {
     href: string
 }
 
-export async function fetchCourses(): Promise<Course[]> {
-    return [
-        { id: 1, name: "Math", href: "/courses/1" },
-        { id: 2, name: "Science", href: "/courses/2" },
-        { id: 3, name: "English", href: "/courses/3" },
-        { id: 4, name: "History", href: "/courses/4" },
-    ]
+export function fetchCourses(): Promise<Course[]> {
+    return fetch(`http://${process.env.API_PUBLIC_DOMAIN}/v1/courses`)
+        .then(response => response.json() as Promise<{ id: number, name: string }[]>)
+        .then(json => (json ?? []).map(course => ({
+            id: course.id,
+            name: course.name,
+            href: `/course/${course.id}`,
+        })))
 }
-
