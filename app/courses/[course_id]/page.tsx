@@ -2,20 +2,11 @@
 
 import { useState } from 'react'
 import { Navbar } from "@/components/navbar/navbar";
-import { Star, FileText, Book, Link, CheckSquare, Activity, Upload, MessageSquare, PieChart, Edit } from 'lucide-react';
+import { menuItems } from '@/lib/vars'
 
 export default function Page({ params }: { params: { course_id: number } }) {
     const [selected, setSelected] = useState('Vaknieuws')
-    const menuItems = [
-        { icon: Star, label: 'Vaknieuws' },
-        { icon: FileText, label: 'Documenten' },
-        { icon: CheckSquare, label: 'Taken' },
-        { icon: Activity, label: 'Oefeningen' },
-        { icon: Upload, label: 'Uploadzone' },
-        { icon: Link, label: 'Weblinks' },
-        { icon: MessageSquare, label: 'Forum' },
-        { icon: Edit, label: 'Wiki' },
-    ];
+
 
     return (
         <div className="flex flex-col min-h-screen bg-background">
