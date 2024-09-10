@@ -153,3 +153,65 @@ export function useCourses() {
 export function useCourseTopic(id: number, topicName?: string) {
     return useQuery(['courseTopic', id, topicName], () => fetchCourseTopic(id, topicName))
 }
+
+export type Message = {
+    id: number;
+    from: string;
+    to: string[];
+    cc: string[];
+    bcc: string[];
+    subject: string;
+    content: string;
+    date: string;
+};
+
+export const fetchMessages = cache(async (): Promise<Message[]> => {
+    const data = await fetchWithCache(`${API_BASE_URL}/messages`)
+    return (data ?? []).map((message: any) => ({
+        id: message.id,
+        from: message.from,
+        to: message.to,
+        cc: message.cc,
+        bcc: message.bcc,
+        subject: message.subject,
+        content: message.content,
+        date: message.date,
+    }))
+});
+
+export const fetchMessage = cache(async (id: number): Promise<Message | null> => {
+    const data = await fetchWithCache(`${API_BASE_URL}/messages/${id}`)
+    return data ? {
+        id: data.id,
+        from: data.from,
+        to: data.to,
+        cc: data.cc,
+        bcc: data.bcc,
+        subject: data.subject,
+        content: data.content,
+        date: data.date,
+    } : null
+});
+
+export type CreateMessageRequest = Omit<Message, 'id' | 'from' | 'date'>;
+
+export const sendMessage = cache(async (newMessage: CreateMessageRequest): Promise<Message> => {
+    const res = await fetch(`${API_BASE_URL}/messages`, {
+        method: 'post',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newMessage)
+    })
+    const data = await res.json()
+    return {
+        id: data.id,
+        from: data.from,
+        to: data.to,
+        cc: data.cc,
+        bcc: data.bcc,
+        subject: data.subject,
+        content: data.content,
+        date: data.date,
+    }
+});
